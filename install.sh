@@ -43,7 +43,7 @@ fi
 '
 
 # ------------------------------------------------------------
-# GNOME + GDM
+# Install GNOME + GDM
 # ------------------------------------------------------------
 echo "[*] Installing GNOME and GDM..."
 xbps-install -y gnome gdm
@@ -51,10 +51,10 @@ ln -sf /etc/sv/gdm /var/service/
 sv up gdm
 
 # ------------------------------------------------------------
-# VM video driver (QEMU/Boxes)
+# Install VM-friendly video drivers and Mesa
 # ------------------------------------------------------------
-echo "[*] Installing VM video driver..."
-xbps-install -y xf86-video-qxl
+echo "[*] Installing VM graphics drivers..."
+xbps-install -y xf86-video-qxl mesa mesa-dri
 
 # ------------------------------------------------------------
 # PipeWire + Bluetooth
@@ -69,4 +69,4 @@ sv up bluetoothd
 # ------------------------------------------------------------
 echo
 echo "[✓] Full desktop setup complete!"
-echo "➡ Reboot now to enter GNOME with full audio, Bluetooth, doas, and all apps ready."
+echo "➡ Reboot now to enter GNOME with full audio, Bluetooth, doas, VM graphics, and all apps ready."
