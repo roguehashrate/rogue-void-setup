@@ -71,9 +71,8 @@ fi
 # ------------------------------------------------------------
 # PipeWire + Bluetooth (Void-correct packages)
 # ------------------------------------------------------------
-xbps-install -y pipewire wireplumber pipewire-pulseaudio \
-               bluez gnome-bluetooth
-
+echo "[*] Installing PipeWire + Bluetooth..."
+xbps-install -y pipewire wireplumber bluez gnome-bluetooth
 ln -sf /etc/sv/bluetoothd /var/service/
 
 # ------------------------------------------------------------
