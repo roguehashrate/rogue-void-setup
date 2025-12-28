@@ -1,72 +1,52 @@
 #!/bin/sh
 set -eu
 
-# ------------------------------------------------------------
-# Root check
-# ------------------------------------------------------------
 if [ "$(id -u)" -ne 0 ]; then
   echo "❌ Please run this script as root."
   exit 1
 fi
 
 echo "[*] Updating repositories..."
-xbps-install -Suvy
+xbps-install -Suy
 
-# ------------------------------------------------------------
-# Detect primary user (UID >= 1000)
-# ------------------------------------------------------------
 USER_NAME=$(awk -F: '$3 >= 1000 && $1 != "nobody" {print $1; exit}' /etc/passwd)
 if [ -z "$USER_NAME" ]; then
   echo "❌ Could not detect a normal user."
   exit 1
 fi
-echo "[*] Detected user: $USER_NAME"
 
-# ------------------------------------------------------------
-# doas setup
-# ------------------------------------------------------------
 echo "[*] Installing doas..."
 xbps-install -y opendoas
+
 if [ ! -f /etc/doas.conf ]; then
   echo "permit persist :wheel" > /etc/doas.conf
   chmod 0400 /etc/doas.conf
 fi
+
 usermod -aG wheel "$USER_NAME"
 
-# sudo alias reminder
-su - "$USER_NAME" -c '
-SHELL_RC="$HOME/.bashrc"
-touch "$SHELL_RC"
-if ! grep -q "alias sudo=" "$SHELL_RC"; then
-  echo "alias sudo='\''echo \"Use doas instead of sudo\"'\''" >> "$SHELL_RC"
+echo "[*] Installing packages..."
+xbps-install -y \
+  dbus \
+  elogind \
+  xorg \
+  gnome \
+  gnome-apps \
+  wayland \
+  wayland-devel \
+  wayland-protocols
+
+echo "[*] Linking services..."
+doas ln -s /etc/sv/dbus /var/service
+doas ln -s /etc/sv/elogind /var/service
+doas ln -s /etc/sv/gdm /var/service
+
+# Add sudo alias to remind user to use doas
+USER_BASHRC="/home/$USER_NAME/.bashrc"
+touch "$USER_BASHRC"
+if ! grep -q '^alias sudo=' "$USER_BASHRC"; then
+  echo "alias sudo='echo \"Please try again and use doas.\"'" >> "$USER_BASHRC"
 fi
-'
 
-# ------------------------------------------------------------
-# Install GNOME + GDM
-# ------------------------------------------------------------
-echo "[*] Installing GNOME and GDM..."
-xbps-install -y gnome gdm
-ln -sf /etc/sv/gdm /var/service/
-sv up gdm
-
-# ------------------------------------------------------------
-# Install VM-friendly video drivers and Mesa
-# ------------------------------------------------------------
-echo "[*] Installing VM graphics drivers..."
-xbps-install -y xf86-video-qxl mesa mesa-dri
-
-# ------------------------------------------------------------
-# PipeWire + Bluetooth
-# ------------------------------------------------------------
-echo "[*] Installing PipeWire + Bluetooth..."
-xbps-install -y pipewire wireplumber bluez gnome-bluetooth
-ln -sf /etc/sv/bluetoothd /var/service/
-sv up bluetoothd
-
-# ------------------------------------------------------------
-# Finish
-# ------------------------------------------------------------
 echo
-echo "[✓] Full desktop setup complete!"
-echo "➡ Reboot now to enter GNOME with full audio, Bluetooth, doas, VM graphics, and all apps ready."
+echo "[✓] Done, everything is installed and linked, reboot."
