@@ -52,13 +52,24 @@ su - "$USER_NAME" -c '
 # ------------------------------------------------------------
 # GNOME + GDM
 # ------------------------------------------------------------
-if ! command -v gnome-shell >/dev/null 2>&1; then
-  echo "[*] Installing GNOME and GDM..."
-  xbps-install -y gnome gdm
-  ln -sf /etc/sv/gdm /var/service/
-else
-  echo "[*] GNOME already installed — skipping."
-fi
+echo "[*] Installing GNOME and GDM..."
+xbps-install -y gnome gdm
+
+# Enable GDM service at boot
+ln -sf /etc/sv/gdm /var/service/
+
+# ------------------------------------------------------------
+# VM video driver (QEMU/Boxes default)
+# ------------------------------------------------------------
+echo "[*] Installing QXL video driver for VM display..."
+xbps-install -y xf86-video-qxl
+
+# ------------------------------------------------------------
+# PipeWire + Bluetooth (Void-correct packages)
+# ------------------------------------------------------------
+echo "[*] Installing PipeWire + Bluetooth..."
+xbps-install -y pipewire wireplumber bluez gnome-bluetooth
+ln -sf /etc/sv/bluetoothd /var/service/
 
 # ------------------------------------------------------------
 # Flatpak (commented out for now)
@@ -67,13 +78,6 @@ fi
 # xbps-install -y flatpak xdg-desktop-portal xdg-desktop-portal-gtk xdg-desktop-portal-gnome
 # mkdir -p /var/lib/flatpak
 # flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-
-# ------------------------------------------------------------
-# PipeWire + Bluetooth (Void-correct packages)
-# ------------------------------------------------------------
-echo "[*] Installing PipeWire + Bluetooth..."
-xbps-install -y pipewire wireplumber bluez gnome-bluetooth
-ln -sf /etc/sv/bluetoothd /var/service/
 
 # ------------------------------------------------------------
 # Optional software selections (commented out for now)
@@ -96,3 +100,5 @@ ln -sf /etc/sv/bluetoothd /var/service/
 echo
 echo "[✓] Core setup complete!"
 echo "➡ Reboot now."
+echo "➡ Log in to GNOME."
+echo "➡ Use: doas <command>"
