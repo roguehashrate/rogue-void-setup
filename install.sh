@@ -63,15 +63,15 @@ fi
 # ------------------------------------------------------------
 # Flatpak + Flathub
 # ------------------------------------------------------------
-echo "[*] Installing Flatpak and portals..."
-xbps-install -y flatpak xdg-desktop-portal xdg-desktop-portal-gtk \
-                gnome-software gnome-software-plugin-flatpak
-
-mkdir -p /var/lib/flatpak
-
-echo "[*] Adding Flathub..."
-flatpak remote-add --if-not-exists flathub \
-  https://flathub.org/repo/flathub.flatpakrepo
+#echo "[*] Installing Flatpak and portals..."
+#xbps-install -y flatpak xdg-desktop-portal xdg-desktop-portal-gtk \
+#                gnome-software gnome-software-plugin-flatpak
+#
+#mkdir -p /var/lib/flatpak
+#
+#echo "[*] Adding Flathub..."
+#flatpak remote-add --if-not-exists flathub \
+#  https://flathub.org/repo/flathub.flatpakrepo
 
 # ------------------------------------------------------------
 # Audio + Bluetooth (PipeWire)
