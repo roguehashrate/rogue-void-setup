@@ -10,7 +10,7 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 echo "[*] Syncing XBPS repositories..."
-xbps-install -S
+xbps-install -Suvy
 
 # ------------------------------------------------------------
 # Detect primary user (UID >= 1000)
@@ -61,102 +61,39 @@ else
 fi
 
 # ------------------------------------------------------------
-# Flatpak + Flathub
+# Flatpak (commented out for now)
 # ------------------------------------------------------------
-#echo "[*] Installing Flatpak and portals..."
-#xbps-install -y flatpak xdg-desktop-portal xdg-desktop-portal-gtk \
-#                gnome-software gnome-software-plugin-flatpak
-#
-#mkdir -p /var/lib/flatpak
-#
-#echo "[*] Adding Flathub..."
-#flatpak remote-add --if-not-exists flathub \
-#  https://flathub.org/repo/flathub.flatpakrepo
+# echo "[*] Installing Flatpak and portals..."
+# xbps-install -y flatpak xdg-desktop-portal xdg-desktop-portal-gtk xdg-desktop-portal-gnome
+# mkdir -p /var/lib/flatpak
+# flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
 # ------------------------------------------------------------
-# Audio + Bluetooth (PipeWire)
+# PipeWire + Bluetooth (Void-correct packages)
 # ------------------------------------------------------------
-echo "[*] Installing PipeWire and Bluetooth..."
-xbps-install -y pipewire pipewire-pulse wireplumber \
-                bluez gnome-bluetooth
+xbps-install -y pipewire wireplumber pipewire-alsa pipewire-pulseaudio \
+               bluez gnome-bluetooth
 
 ln -sf /etc/sv/bluetoothd /var/service/
 
 # ------------------------------------------------------------
-# Optional software selections
+# Optional software selections (commented out for now)
 # ------------------------------------------------------------
-
-echo
-echo "[*] Optional: Install Web Browser?"
-echo "1) Firefox (Flatpak)"
-echo "2) Brave (Flatpak)"
-echo "3) Zen Browser (Flatpak)"
-echo "4) None"
-printf "Enter choice [1-4]: "
-read opt
-case "$opt" in
-  1) flatpak install -y flathub org.mozilla.firefox ;;
-  2) flatpak install -y flathub com.brave.Browser ;;
-  3) flatpak install -y flathub app.zen_browser.zen ;;
-esac
-
-echo
-echo "[*] Optional: Install Text Editor?"
-echo "1) Vim"
-echo "2) Neovim"
-echo "3) Emacs"
-echo "4) Nano"
-echo "5) Micro"
-echo "6) None"
-printf "Enter choice [1-6]: "
-read opt
-case "$opt" in
-  1) xbps-install -y vim ;;
-  2) xbps-install -y neovim ;;
-  3) xbps-install -y emacs ;;
-  4) xbps-install -y nano ;;
-  5) xbps-install -y micro ;;
-esac
-
-echo
-echo "[*] Optional: Install Terminal Emulator?"
-echo "1) Alacritty"
-echo "2) Kitty"
-echo "3) None"
-printf "Enter choice [1-3]: "
-read opt
-case "$opt" in
-  1) xbps-install -y alacritty ;;
-  2) xbps-install -y kitty ;;
-esac
-
-echo
-echo "[*] Optional: Install Image Manipulation Tool?"
-echo "1) GIMP (Flatpak)"
-echo "2) Krita (Flatpak)"
-echo "3) None"
-printf "Enter choice [1-3]: "
-read opt
-case "$opt" in
-  1) flatpak install -y flathub org.gimp.GIMP ;;
-  2) flatpak install -y flathub org.kde.krita ;;
-esac
-
-echo
-echo "[*] Optional: Install OBS Studio (Flatpak)?"
-echo "1) Yes"
-echo "2) No"
-printf "Enter choice [1-2]: "
-read opt
-case "$opt" in
-  1) flatpak install -y flathub com.obsproject.Studio ;;
-esac
+# echo
+# echo "[*] Optional: Install Web Browser?"
+# ...
+# echo "[*] Optional: Install Text Editor?"
+# ...
+# echo "[*] Optional: Install Terminal Emulator?"
+# ...
+# echo "[*] Optional: Install Image Manipulation Tool?"
+# ...
+# echo "[*] Optional: Install OBS Studio (Flatpak)?"
+# ...
 
 # ------------------------------------------------------------
 # Finish
 # ------------------------------------------------------------
 echo
-echo "[✓] Setup complete!"
+echo "[✓] Core setup complete!"
 echo "➡ Reboot now."
-echo "➡ Log in to GNOME."
-echo "➡ Use: doas <command>"
