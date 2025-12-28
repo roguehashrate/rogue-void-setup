@@ -34,12 +34,16 @@ xbps-install -y \
   gnome-apps \
   wayland \
   wayland-devel \
-  wayland-protocols
+  wayland-protocols \
+  bluez \
+  bluez-utils \
+  gnome-bluetooth
 
 echo "[*] Linking services..."
-doas ln -s /etc/sv/dbus /var/service
-doas ln -s /etc/sv/elogind /var/service
-doas ln -s /etc/sv/gdm /var/service
+sudo ln -s /etc/sv/dbus /var/service
+sudo ln -s /etc/sv/elogind /var/service
+sudo ln -s /etc/sv/gdm /var/service
+sudo ln -s /etc/sv/bluetoothd /var/service
 
 # Add sudo alias to remind user to use doas
 USER_BASHRC="/home/$USER_NAME/.bashrc"
