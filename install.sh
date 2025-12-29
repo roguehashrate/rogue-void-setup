@@ -30,7 +30,6 @@ xbps-install -y \
   ffmpeg optipng sassc \
   gtksourceview4 \
   json-glib json-glib-devel \
-  webkit2gtk webkit2gtk-devel libwebkit2gtk41 libwebkit2gtk41-devel \
   gvfs-smb samba gvfs-goa gvfs-gphoto2 gvfs-mtp gvfs-afc gvfs-afp \
   libfido2 ykclient libyubikey pam-u2f \
   efibootmgr zsh
