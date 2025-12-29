@@ -63,7 +63,6 @@ xbps-install -y \
   NetworkManager-vpnc \
   NetworkManager-l2tp \
   pipewire wireplumber \
-  alsa-plugins-pipewire \
   bluez \
   cups cups-pk-helper cups-filters \
   foomatic-db foomatic-db-engine gutenprint
