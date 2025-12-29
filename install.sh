@@ -62,7 +62,7 @@ xbps-install -y \
   NetworkManager-openconnect \
   NetworkManager-vpnc \
   NetworkManager-l2tp \
-  pipewire wireplumber pipewire-pulse \
+  pipewire wireplumber \
   alsa-plugins-pipewire \
   bluez \
   cups cups-pk-helper cups-filters \
