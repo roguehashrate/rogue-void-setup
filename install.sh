@@ -19,6 +19,16 @@ if [ -z "$USER_NAME" ]; then
   exit 1
 fi
 
+echo "[*] Installing doas..."
+xbps-install -y opendoas
+
+if [ ! -f /etc/doas.conf ]; then
+  echo "permit persist :wheel" > /etc/doas.conf
+  chmod 0400 /etc/doas.conf
+fi
+
+usermod -aG wheel "$USER_NAME"
+
 echo "[*] Installing base utilities and dev tools..."
 xbps-install -y \
   curl wget git xz unzip zip nano vim \
