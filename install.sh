@@ -7,26 +7,25 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 echo "[*] Updating system..."
-xbps-install -uy xbps
-xbps-install -uy
+xbps-install -Suy xbps || true
+xbps-install -Suy || true
 
 echo "[*] Enabling non-free repository..."
-xbps-install -Rsy void-repo-nonfree
+xbps-install -Rsy void-repo-nonfree || true
 
 USER_NAME=$(awk -F: '$3 >= 1000 && $1 != "nobody" {print $1; exit}' /etc/passwd)
 if [ -z "$USER_NAME" ]; then
   echo "Could not detect a normal user."
   exit 1
 fi
+echo "[*] Detected user: $USER_NAME"
 
 echo "[*] Installing doas..."
 xbps-install -y opendoas
-
 if [ ! -f /etc/doas.conf ]; then
   echo "permit persist :wheel" > /etc/doas.conf
   chmod 0400 /etc/doas.conf
 fi
-
 usermod -aG wheel "$USER_NAME"
 
 echo "[*] Installing base utilities and dev tools..."
@@ -44,7 +43,7 @@ xbps-install -y \
   libfido2 ykclient libyubikey pam-u2f \
   efibootmgr zsh
 
-echo "[*] Installing GNOME (Wayland default)..."
+echo "[*] Installing GNOME desktop..."
 xbps-install -y \
   xorg \
   gnome-shell \
@@ -54,7 +53,8 @@ xbps-install -y \
   gnome-terminal \
   nautilus \
   gnome-tweaks \
-  evince
+  evince \
+  gnome-bluetooth
 
 xbps-install -Rsy \
   xdg-desktop-portal \
@@ -77,13 +77,10 @@ xbps-install -y \
   cups cups-pk-helper cups-filters \
   foomatic-db foomatic-db-engine gutenprint
 
-usermod -aG bluetooth "$USER_NAME"
+usermod -aG bluetooth lp "$USER_NAME"
 
 echo "[*] Installing laptop power & time services..."
-xbps-install -y \
-  cronie chrony \
-  tlp tlp-rdw \
-  powertop
+xbps-install -y cronie chrony tlp tlp-rdw powertop
 
 echo "[*] Installing fonts..."
 xbps-install -Rsy \
@@ -99,7 +96,7 @@ xbps-install -Rsy \
   font-hack-ttf \
   ttf-ubuntu-font-family
 
-echo "[*] Installing Intel graphics stack (ThinkPad T470)..."
+echo "[*] Installing Intel graphics stack..."
 xbps-install -y \
   linux-firmware-intel \
   mesa mesa-dri \
@@ -108,23 +105,19 @@ xbps-install -y \
   mesa-vaapi \
   mesa-vdpau
 
-echo "[*] Optional Flatpak support..."
+echo "[*] Installing Flatpak..."
 xbps-install -y flatpak || true
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
 echo "[*] Enabling services..."
-ln -sf /etc/sv/dbus /var/service
-ln -sf /etc/sv/elogind /var/service
-ln -sf /etc/sv/gdm /var/service
-ln -sf /etc/sv/NetworkManager /var/service
-ln -sf /etc/sv/bluetoothd /var/service
-ln -sf /etc/sv/cupsd /var/service
-ln -sf /etc/sv/cronie /var/service
-ln -sf /etc/sv/chronyd /var/service
-ln -sf /etc/sv/tlp /var/service
+for svc in dbus elogind gdm NetworkManager bluetoothd cupsd cronie chronyd tlp pipewire wireplumber; do
+  ln -sf "/etc/sv/$svc" /var/service/
+done
 
 echo "[*] Disabling conflicting services..."
-rm -f /var/service/acpid || true
-rm -f /var/service/dhcpcd || true
+for svc in acpid dhcpcd; do
+  rm -f "/var/service/$svc" || true
+done
 
 echo "[*] Adding sudo reminder alias..."
 USER_BASHRC="/home/$USER_NAME/.bashrc"
@@ -133,5 +126,14 @@ if ! grep -q '^alias sudo=' "$USER_BASHRC"; then
   echo "alias sudo='echo \"Please try again and use doas.\"'" >> "$USER_BASHRC"
 fi
 
+echo "[*] Verifying essential services..."
+for svc in pipewire wireplumber NetworkManager bluetoothd cupsd tlp chronyd gdm; do
+    if sv status "$svc" | grep -q run; then
+        echo "  $svc ✅ running"
+    else
+        echo "  $svc ❌ NOT running"
+    fi
+done
+
 echo
-echo "Done. Everything is installed and linked. Reboot."
+echo "✅ Setup complete! Reboot to start using your fully functional Void Linux GNOME laptop."
