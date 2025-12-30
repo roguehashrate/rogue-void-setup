@@ -108,9 +108,6 @@ xbps-install -y \
   mesa-vaapi \
   mesa-vdpau
 
-echo "[*] Optional theming..."
-xbps-install -y papirus-icon-theme breeze-cursors || true
-
 echo "[*] Optional Flatpak support..."
 xbps-install -y flatpak || true
 
