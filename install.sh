@@ -77,7 +77,7 @@ xbps-install -y \
   cups cups-pk-helper cups-filters \
   foomatic-db foomatic-db-engine gutenprint
 
-usermod -aG bluetooth lp "$USER_NAME"
+usermod -aG bluetooth,lp "$USER_NAME"
 
 echo "[*] Installing laptop power & time services..."
 xbps-install -y cronie chrony tlp tlp-rdw powertop
