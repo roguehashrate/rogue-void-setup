@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -eu
 
 LOG="/var/log/void-installer.log"
@@ -49,18 +49,19 @@ install_core_packages() {
     gvfs-smb samba gvfs-goa gvfs-gphoto2 gvfs-mtp gvfs-afc gvfs-afp \
     libfido2 ykclient libyubikey pam-u2f \
     efibootmgr \
-    pipewire pipewire-pulse wireplumber \
-    bluez bluez-utils
+    pipewire wireplumber \
+    bluez
 }
 
 install_gnome() {
-  echo "[*] Installing GNOME desktop..."
+  echo "[*] Installing GNOME desktop + apps..."
   xbps-install -y \
     xorg gnome-shell gnome-control-center gnome-session gdm \
     gnome-terminal nautilus gnome-tweaks evince gnome-bluetooth
   xbps-install -Sy \
     xdg-desktop-portal xdg-desktop-portal-gtk xdg-user-dirs \
-    xdg-user-dirs-gtk xdg-utils gnome-browser-connector
+    xdg-user-dirs-gtk xdg-utils gnome-browser-connector \
+    firefox
 }
 
 install_fonts() {
